@@ -1,5 +1,7 @@
 package com.example.wowlookup.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +25,12 @@ public class LookupController {
     }
 
     @GetMapping("/mplusscore/{characterName}/{realm}")
-    public String getCharacterMplusScore(@PathVariable String characterName, @PathVariable String realm) {
+    public Double getCharacterMplusScore(@PathVariable String characterName, @PathVariable String realm) {
         return lookupService.getCharacterMplusScore(characterName, realm);
     }
 
     @GetMapping("/professions/{characterName}/{realm}")
-    public String getCharacterProfessions(@PathVariable String characterName, @PathVariable String realm) {
+    public List<String> getCharacterProfessions(@PathVariable String characterName, @PathVariable String realm) {
         return lookupService.getCharacterProfessions(characterName, realm);
     }
 }

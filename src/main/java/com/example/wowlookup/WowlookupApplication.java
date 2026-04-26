@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WowlookupApplication {
 
 	public static void main(String[] args) {
-		System.out.println("yo bro");
+		System.out.println("Sebbe startar");
 		SpringApplication.run(WowlookupApplication.class, args);
 
 		// BlizzardTokenGenerator tokenGenerator = new BlizzardTokenGenerator();
