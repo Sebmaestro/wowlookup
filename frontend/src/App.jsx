@@ -1,5 +1,5 @@
 import './App.css'
-import CharacterLookup from './components/CharacterLookup.jsx'
+import CharacterLookup from './components/Characterlookup.jsx'
 
 function App() {
   return (
