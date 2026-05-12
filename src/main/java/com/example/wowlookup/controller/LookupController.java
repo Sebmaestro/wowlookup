@@ -65,6 +65,12 @@ public class LookupController {
         return lookupService.getCharacterProfessions(characterName, realm);
     }
 
+    /**
+     * Endpoint to fetch the raid progression of a character for the current expansion.
+     * @param characterName
+     * @param realm
+     * @return
+     */
     @GetMapping("/raidprogress/{characterName}/{realm}")
     public List<RaidProgressInfo> getCharacterRaidProgression(@PathVariable String characterName, @PathVariable String realm) {
         

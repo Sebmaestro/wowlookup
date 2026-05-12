@@ -97,7 +97,7 @@ function CharacterLookup() {
 
     const raidProgressData = await response.json()
     setCharacterRaidProgress(raidProgressData)
-    console.log("Lajbans: ", raidProgressData)
+    console.log("Fetched raid progression data: ", raidProgressData)
     return raidProgressData
   }
 
@@ -147,7 +147,8 @@ function CharacterLookup() {
           normalizedName,
           normalizedRealm,
           score: scoreData,
-          professions: professionsText || 'None'
+          professions: professionsText || 'None',
+          raidProgress: raidProgressData
         }]
       )
       console.log(searches)
@@ -232,9 +233,13 @@ function CharacterLookup() {
                 <td>{search.normalizedRealm}</td>
                 <td>{search.score}</td>
                 <td>{search.professions}</td>
-                {raidInfo.map((raid) => (
-                  <td key={raid.name}>ur prog/{raid.bossCount}</td>
-                ))}
+                {raidInfo.map((raid) => {
+                  const progress = (search.raidProgress || []).find(progress => progress.raidName === raid.name)
+                  return (
+                    <td key={raid.name} className={'difficulty-' + (progress?.progressDifficulty)}>
+                      {progress.progressBossCount}/{raid.bossCount}</td>
+                  )
+                })}
               </tr>
             ))}
           </tbody>

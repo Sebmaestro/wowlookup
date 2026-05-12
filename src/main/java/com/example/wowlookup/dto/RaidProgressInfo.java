@@ -3,16 +3,19 @@ package com.example.wowlookup.dto;
 public class RaidProgressInfo {
     private String raidName;
     private int completedRaidDifficulty;
-    private String highestDifficultyProgress;
+    private int progressBossCount;
+    private int totalBossCount;
     private int progressDifficulty;
+    
 
     public RaidProgressInfo() {
     }
 
-    public RaidProgressInfo(String raidName, int completedRaidDifficulty, String highestDifficultyProgress, int progressDifficulty) {
+    public RaidProgressInfo(String raidName, int completedRaidDifficulty, int progressBossCount, int totalBossCount, int progressDifficulty) {
         this.raidName = raidName;
         this.completedRaidDifficulty = completedRaidDifficulty;
-        this.highestDifficultyProgress = highestDifficultyProgress;
+        this.progressBossCount = progressBossCount;
+        this.totalBossCount = totalBossCount;
         this.progressDifficulty = progressDifficulty;
     }
 
@@ -32,12 +35,20 @@ public class RaidProgressInfo {
         this.completedRaidDifficulty = completedRaidDifficulty;
     }
 
-    public String getHighestDifficultyProgress() {
-        return highestDifficultyProgress;
+    public int getProgressBossCount() {
+        return progressBossCount;
     }
 
-    public void setHighestDifficultyProgress(String highestDifficultyProgress) {
-        this.highestDifficultyProgress = highestDifficultyProgress;
+    public void setProgressBossCount(int progressBossCount) {
+        this.progressBossCount = progressBossCount;
+    }
+
+    public int getTotalBossCount() {
+        return totalBossCount;
+    }
+
+    public void setTotalBossCount(int totalBossCount) {
+        this.totalBossCount = totalBossCount;
     }
 
     public int getProgressDifficulty() {
@@ -48,13 +59,5 @@ public class RaidProgressInfo {
         this.progressDifficulty = progressDifficulty;
     }
 
-    @Override
-    public String toString() {
-        return "RaidProgressInfo{" +
-                "raidName='" + raidName + '\'' +
-                ", completedRaidDifficulty=" + completedRaidDifficulty +
-                ", highestDifficultyProgress='" + highestDifficultyProgress + '\'' +
-                ", progressDifficulty=" + progressDifficulty +
-                '}';
-    }
+
 }

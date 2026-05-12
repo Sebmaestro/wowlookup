@@ -112,8 +112,10 @@ public class LookupService {
 
             JsonNode expansions = response.path("expansions");
             int bestDifficulty = 0;
-            String bestProgress = "";
+            //String bestProgress = "";
             int progressDifficulty = 0;
+            int progressBossCount = 0;
+            int totalBossCount = 0;
 
             ArrayList<RaidProgressInfo> characterProgressionList = new ArrayList<>();
             int currentExpansionId = getCurrentExpansionId();
@@ -132,25 +134,34 @@ public class LookupService {
                         for (JsonNode difficulty : difficulties) {
                             String status = difficulty.path("status").path(("name")).asString();
                             int difficultyRank = difficultyRank(difficulty.path("difficulty").path("name").asString());
-                            System.out.println("Checking difficulty: " + difficulty.path("difficulty").path("name").asString() + " with status: " + status);
+                            System.out.println("Checking difficulty: " + difficulty.path("difficulty").path("name").asString() 
+                            + " with status: " + status);
 
                             if (status.equals("Complete")) {
-                                bestDifficulty = Math.max(bestDifficulty, difficultyRank);
-                                bestProgress = difficulty.path("progress").path("completed_count").asInt() + "/" + difficulty.path("progress").path("total_count").asInt() + " bosses";
+                                //bestDifficulty = Math.max(bestDifficulty, difficultyRank);
+                                bestDifficulty = difficultyRank;
+                                progressDifficulty = bestDifficulty;
+                                progressBossCount = difficulty.path("progress").path("completed_count").asInt();
+
+                                totalBossCount = difficulty.path("progress").path("total_count").asInt();
                             } else if (status.equals("In Progress")) {
-                                bestProgress = difficulty.path("progress").path("completed_count").asInt() + "/" + difficulty.path("progress").path("total_count").asInt() + " bosses";
-                                progressDifficulty = Math.max(progressDifficulty, difficultyRank);
-                                if(bestDifficulty > progressDifficulty) progressDifficulty = bestDifficulty; // If they have completed a higher difficulty, show that as progress
+                                progressBossCount = difficulty.path("progress").path("completed_count").asInt();
+                                totalBossCount = difficulty.path("progress").path("total_count").asInt();
+                                
+                                if(progressBossCount > 0) {
+                                    progressDifficulty = difficultyRank;
+                                }                                
                             }
 
                         }
-                        System.out.println("bestDifficulty: " + bestDifficulty + ", bestProgress: " + bestProgress + ", progressDifficulty: " + progressDifficulty + " for raid: "
+                        System.out.println("bestDifficulty fully cleared: " + bestDifficulty + ", progressBossCount: " + progressBossCount + ", totalBossCount: " + totalBossCount + ", progressDifficulty: " + progressDifficulty + " for raid: "
                                 + raid.path("instance").path("name").asString());
 
                         characterProgressionList.add(new RaidProgressInfo(
                                 raid.path("instance").path("name").asString(),
                                 bestDifficulty,
-                                bestProgress,
+                                progressBossCount,
+                                totalBossCount,
                                 progressDifficulty
                         ));
                     }
@@ -169,11 +180,16 @@ public class LookupService {
 
     private int difficultyRank(String difficultyName) {
         return switch (difficultyName) {
-            case "Raid Finder", "LFR" -> 1;
-            case "Normal" -> 2;
-            case "Heroic" -> 3;
-            case "Mythic" -> 4;
-            default -> 0;
+            case "Raid Finder", "LFR" ->
+                1;
+            case "Normal" ->
+                2;
+            case "Heroic" ->
+                3;
+            case "Mythic" ->
+                4;
+            default ->
+                0;
         };
     }
 
@@ -206,7 +222,9 @@ public class LookupService {
             }
 
         }
-        System.out.println("Raid info: " + raidInfos.toString());
+        for (RaidInfo info : raidInfos) {
+            System.out.println("Raid: " + info.getName() + " with boss count: " + info.getBossCount());
+        }
         return raidInfos;
     }
 

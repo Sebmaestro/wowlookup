@@ -99,3 +99,8 @@
   }
 }
 
+.difficulty-0 { background:#f0f0f0; color:#333; } /* not cleared */
+.difficulty-1 { background:#00ff08; color:#fff; } /* RF */
+.difficulty-2 { background:#0008ff; color:#000; } /* Normal */
+.difficulty-3 { background:#cc0cd3; color:#fff; } /* Heroic */
+.difficulty-4 { background:#df7008; color:#fff; } /* Mythic */
