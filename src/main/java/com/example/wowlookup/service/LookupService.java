@@ -119,11 +119,13 @@ public class LookupService {
 
             ArrayList<RaidProgressInfo> characterProgressionList = new ArrayList<>();
             int currentExpansionId = getCurrentExpansionId();
+            boolean hasCurrentExpansionProgression = false;
 
             for (JsonNode expansion : expansions) {
                 System.out.println("Checking expansion: " + expansion.path("expansion").path("name").asString());
                 if (expansion.path("expansion").path("id").asInt() == currentExpansionId) {
                     System.out.println("hello");
+                    hasCurrentExpansionProgression = true;
                     JsonNode raids = expansion.path("instances");
 
                     for (JsonNode raid : raids) {
@@ -134,8 +136,8 @@ public class LookupService {
                         for (JsonNode difficulty : difficulties) {
                             String status = difficulty.path("status").path(("name")).asString();
                             int difficultyRank = difficultyRank(difficulty.path("difficulty").path("name").asString());
-                            System.out.println("Checking difficulty: " + difficulty.path("difficulty").path("name").asString() 
-                            + " with status: " + status);
+                            System.out.println("Checking difficulty: " + difficulty.path("difficulty").path("name").asString()
+                                    + " with status: " + status);
 
                             if (status.equals("Complete")) {
                                 //bestDifficulty = Math.max(bestDifficulty, difficultyRank);
@@ -147,10 +149,10 @@ public class LookupService {
                             } else if (status.equals("In Progress")) {
                                 progressBossCount = difficulty.path("progress").path("completed_count").asInt();
                                 totalBossCount = difficulty.path("progress").path("total_count").asInt();
-                                
-                                if(progressBossCount > 0) {
+
+                                if (progressBossCount > 0) {
                                     progressDifficulty = difficultyRank;
-                                }                                
+                                }
                             }
 
                         }
@@ -168,6 +170,10 @@ public class LookupService {
 
                     break;
                 }
+            }
+            if (!hasCurrentExpansionProgression) {
+                System.out.println(characterName + " does not have raid progression for current expansion.");
+                return new ArrayList<>(); // No raid progression for current expansion
             }
 
             return characterProgressionList;

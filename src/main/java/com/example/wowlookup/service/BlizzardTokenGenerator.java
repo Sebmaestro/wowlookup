@@ -43,6 +43,7 @@ public class BlizzardTokenGenerator {
 
                 //System.out.println("this is the shit\n"+response);
                 token = response.path("access_token").asString();
+                System.out.println("Token: " + token);
                 long expiresIn = response.path("expires_in").asLong(0);
                 tokenExpiry = Instant.now().plusSeconds(expiresIn -60); // Refresh 1 minute before expiry
 

@@ -37,7 +37,7 @@ public class LookupController {
      * @return
      */
     @GetMapping("/mplusscore/{characterName}/{realm}")
-    public ResponseEntity<?> getCharacterMplusScore(@PathVariable String characterName, @PathVariable String realm) {
+    public ResponseEntity<String> getCharacterMplusScore(@PathVariable String characterName, @PathVariable String realm) {
         String score = lookupService.getCharacterMplusScore(characterName, realm);
 
         if ("noChar".equals(score)) {
@@ -66,30 +66,44 @@ public class LookupController {
     }
 
     /**
-     * Endpoint to fetch the raid progression of a character for the current expansion.
+     * Endpoint to fetch the raid progression of a character for the current
+     * expansion.
+     *
      * @param characterName
      * @param realm
      * @return
      */
     @GetMapping("/raidprogress/{characterName}/{realm}")
-    public List<RaidProgressInfo> getCharacterRaidProgression(@PathVariable String characterName, @PathVariable String realm) {
-        
-        return lookupService.getCharacterRaidProgression(characterName, realm);        
+    public ResponseEntity<?> getCharacterRaidProgression(@PathVariable String characterName, @PathVariable String realm) {
+
+        List<RaidProgressInfo> raidProgresInfo = lookupService.getCharacterRaidProgression(characterName, realm);
+
+        if (raidProgresInfo == null) {
+            System.out.println("jappaleno"+characterName+realm);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("character not found: " + characterName + " on realm: " + realm);
+        }
+        else if (raidProgresInfo.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        } else {
+            return ResponseEntity.ok(raidProgresInfo);
+        }        
     }
 
     /**
      * Endpoint to fetch the names of raids in the current expansion.
+     *
      * @return
      */
-    @GetMapping("/raidnames") 
+    @GetMapping("/raidnames")
     public List<RaidInfo> getRaidNames() {
         System.out.println("Received request for raid names");
         return lookupService.getMidnightRaidInfo();
     }
 
-    
     /**
      * Endpoint to fetch the current expansion ID.
+     *
      * @return
      */
     /*

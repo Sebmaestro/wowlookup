@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 function CharacterLookup() {
   const [characterName, setCharacterName] = useState('')
   const [realm, setRealm] = useState('')
-  //const [result, setResult] = useState('')
   const [error, setError] = useState('')
   const [score, setScore] = useState('')
   const [professions, setProfessions] = useState('')
@@ -42,23 +41,18 @@ function CharacterLookup() {
     const response = await fetch(`/api/lookup/mplusscore/${characterName}/${realm}`)
 
     if (response.status === 404) {
-      const msg = await response.text()
-      setError(msg)
-      return null
+      console.log("Character not found: " + characterName + " on realm: " + realm+" in score fetch")
+      setError("Character not found")
+      return 404;
     }
 
     if (response.status === 204) {
-      setError(`${characterName} - ${realm} has no M+ score for the current season`)
-      return null
-    }
-
-    if (!response.ok) {
-      setError('Failed to fetch M+ score')
-      return null
+      return 204;
     }
 
     const scoreData = await response.json()
     setScore(scoreData)
+    console.log("Fetched M+ score: ", scoreData)
     return scoreData
   }
 
@@ -71,13 +65,9 @@ function CharacterLookup() {
   async function fetchCharacterProfessions(characterName, realm) {
     const response = await fetch(`/api/lookup/professions/${characterName}/${realm}`)
 
-    if (!response.ok) {
-      setError('Failed to fetch professions')
-      return null
-    }
-
     const professionData = await response.json()
     setProfessions(professionData)
+    console.log("Fetched professions: ", professionData)
     return professionData
   }
 
@@ -90,9 +80,16 @@ function CharacterLookup() {
   async function fetchCharacterRaidProgress(characterName, realm) {
     const response = await fetch(`/api/lookup/raidprogress/${characterName}/${realm}`)
 
-    if (!response.ok) {
-      setError('Failed to fetch raid progression data')
-      return null
+    if (response.status === 204) {
+      const msg = await response.text()
+      console.log("babayaga" + msg)
+      setError("Character does not have raid progression for current expansion")
+      return 204;
+    }
+    if (response.status === 404) {
+      setError("Character not found")
+      console.log("Character not found: " + characterName + " on realm: " + realm+" in raid progress fetch")
+      return 404;
     }
 
     const raidProgressData = await response.json()
@@ -119,9 +116,23 @@ function CharacterLookup() {
         fetchCharacterRaidProgress(characterName, realm)
       ])
 
-      if (!scoreData || !professions || !raidProgressData) {
+      
+
+      if (scoreData === 404 || raidProgressData === 404) {
         setLoading(false)
+        console.log("Character does not exist, aborting search")
         return
+      }
+
+      if (scoreData === 204 || raidProgressData === 204) {
+        setLoading(false)
+        if (scoreData === 204 && raidProgressData === 204) {
+          setError(characterName + " has no M+ score or raid progression for the current season")
+        } else if (scoreData === 204) {
+          setError(characterName + " has no M+ score for the current season")
+        } else {
+          setError(characterName + " has no raid progression for the current season")
+        }
       }
 
       const professionsText = Array.isArray(professions) ? professions.join(', ') : String(professions)
@@ -146,15 +157,17 @@ function CharacterLookup() {
         {
           normalizedName,
           normalizedRealm,
-          score: scoreData,
+          //If score data is 204 from the backend status code then we set it to 0
+          score: scoreData !== 204 ? scoreData : 0,
           professions: professionsText || 'None',
-          raidProgress: raidProgressData
+          raidProgress: Array.isArray(raidProgressData) ? raidProgressData : []
         }]
       )
       console.log(searches)
       setLoading(false)
     } catch (error) {
       setError(error.message)
+      console.log("error i catchen: " + error.message)
       setLoading(false)
     }
   }
@@ -222,8 +235,8 @@ function CharacterLookup() {
               {raidInfo.map((raid) => (
                 <th key={raid.name}>{raid.name}</th>
               ))}
-              
-              
+
+
             </tr>
           </thead>
           <tbody>
@@ -236,8 +249,8 @@ function CharacterLookup() {
                 {raidInfo.map((raid) => {
                   const progress = (search.raidProgress || []).find(progress => progress.raidName === raid.name)
                   return (
-                    <td key={raid.name} className={'difficulty-' + (progress?.progressDifficulty)}>
-                      {progress.progressBossCount}/{raid.bossCount}</td>
+                    <td key={raid.name} className={'difficulty-' + (progress?.progressDifficulty ?? 'none')}>
+                      {progress?.progressBossCount ?? 0}/{raid.bossCount}</td>
                   )
                 })}
               </tr>
@@ -245,7 +258,21 @@ function CharacterLookup() {
           </tbody>
         </table>
       </div>
+
+      
+      <div className="legend">
+        <p><strong>Difficulty Legend:</strong></p>
+        <p><span className="difficulty-4">Orange</span> = Mythic</p>
+        <p><span className="difficulty-3">Pink</span> = Heroic</p>
+        <p><span className="difficulty-2">Blue</span> = Normal</p>
+        <p><span className="difficulty-1">Green</span> = LFR</p>
+      </div>
+
+      <div className="explanation">
+        <h2>The raid progression shows the color of the hardest difficulty the character has done with atleast one boss defeated</h2>
+      </div>
     </section>
+    
   )
 }
 
