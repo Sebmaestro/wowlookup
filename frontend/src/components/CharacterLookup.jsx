@@ -270,6 +270,7 @@ function CharacterLookup() {
 
       <div className="explanation">
         <h2>The raid progression shows the color of the hardest difficulty the character has done with atleast one boss defeated</h2>
+        <p>For realms like tarren mill with 2 words, write "tarren-mill"</p>
       </div>
     </section>
     
